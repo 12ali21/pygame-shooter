@@ -1,35 +1,22 @@
 import pygame
 import math
+import os
 from projectile import Projectile
+from player import Player
 
 pygame.init()
+
+main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 screen = pygame.display.set_mode((800,600))
 clock = pygame.time.Clock()
 
 dt = 0
 
-# Player variables
-player_pos = pygame.Vector2(screen.get_width()/2, screen.get_height()/2)
-player_speed = 200
+all_sprites_group = pygame.sprite.Group()
+projectiles_group = pygame.sprite.Group()
 
-# Projectiles Variables
-projectiles = []
-
-def draw_projectiles(screen, projectiles:list[Projectile], dt):
-    for p in projectiles:
-        print(p.vector)
-        p.vector = pygame.Vector2(p.vector.x + math.cos(p.direction) * p.speed * dt, p.vector.y + math.sin(p.direction) * p.speed * dt)
-
-        # projectile bounds
-        if(p.vector.x > screen.get_width() or p.vector.x < 0):
-            projectiles.remove(p)
-        elif(p.vector.y > screen.get_height() or p.vector.y < 0):
-            projectiles.remove(p)
-        else:
-            pygame.draw.circle(screen, "gray", p.vector, p.radius)
-
-
+player = Player(all_sprites_group, coordinates=(100,100))
 
 running = True
 while running:
@@ -40,31 +27,23 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Left mouse button press
             if event.button == 1:
-                vector = pygame.Vector2(event.pos) - player_pos
-                projectiles.append(Projectile(1000, player_pos, -math.radians(vector.angle_to((0,0))), 10))
-                
+                vector = pygame.Vector2(event.pos) - player.rect.center
+                Projectile(all_sprites_group, projectiles_group, rect=player.rect , direction=-math.radians(vector.angle_to((0,0))), speed=1000)
                 
 
-    # Detect keys
-    keys = pygame.key.get_pressed()
-    if(keys[pygame.K_w]):
-        player_pos.y -= dt * player_speed
-    if(keys[pygame.K_s]):
-        player_pos.y += dt * player_speed
-    if(keys[pygame.K_d]):
-        player_pos.x += dt * player_speed
-    if(keys[pygame.K_a]):
-        player_pos.x -= dt * player_speed
-        
+    # update
+    all_sprites_group.update(dt)    
 
-    # Draw
+    # Draw background (DON'T DRAW ANYTHING BEFORE THIS)
     screen.fill((0, 0, 0))
+    
+    all_sprites_group.draw(screen)
     pygame.draw.circle(screen, "red", player_pos, 40)
-    draw_projectiles(screen, projectiles, dt)
 
     pygame.display.flip()
 
     # dt(Delta time): time in seconds passed since last frame
+    # (needed so dark souls 1 doesn't happen)
     dt = clock.tick(60) / 1000
 
 pygame.quit()

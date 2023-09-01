@@ -1,8 +1,12 @@
+# Inspiration from Deep Rock Galactic (Rock and Stone!)
+
+
 import pygame
 import math
 import os
 from projectile import Projectile
 from player import Player
+from weapon import Gun
 
 pygame.init()
 
@@ -17,6 +21,7 @@ all_sprites_group = pygame.sprite.Group()
 projectiles_group = pygame.sprite.Group()
 
 player = Player(all_sprites_group, coordinates=(100,100))
+gun = Gun(all_sprites_group, wielder=player, dist_to_center=player.rect.width/2)
 
 running = True
 while running:
@@ -28,18 +33,20 @@ while running:
             # Left mouse button press
             if event.button == 1:
                 vector = pygame.Vector2(event.pos) - player.rect.center
-                Projectile(all_sprites_group, projectiles_group, rect=player.rect , direction=-math.radians(vector.angle_to((0,0))), speed=1000)
+                p_rect = pygame.rect.Rect(0,0,10,10)
+                p_rect.center = player.rect.center
+                Projectile(all_sprites_group, projectiles_group, rect=p_rect , direction=-math.radians(vector.angle_to((0,0))), speed=1000)
                 
+    vector = pygame.Vector2(pygame.mouse.get_pos()) - player.rect.center
+    
+    gun.face_direction(vector.angle_to((0,0)))
 
     # update
     all_sprites_group.update(dt)    
 
     # Draw background (DON'T DRAW ANYTHING BEFORE THIS)
-    screen.fill((0, 0, 0))
-    
+    screen.fill('yellow')
     all_sprites_group.draw(screen)
-    pygame.draw.circle(screen, "red", player_pos, 40)
-
     pygame.display.flip()
 
     # dt(Delta time): time in seconds passed since last frame

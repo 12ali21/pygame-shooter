@@ -16,11 +16,10 @@ class Projectile(pygame.sprite.Sprite):
     
     def update(self, dt):
         self.rect = self.rect.move(math.cos(self.direction) * self.speed * dt, math.sin(self.direction) * self.speed * dt)
-        print(self.rect)
         # projectile bounds
         screen = pygame.display.get_surface()
         if(self.rect.x > screen.get_width() or self.rect.x < 0):
-            self.remove()
+            self.kill()
         elif(self.rect.y > screen.get_height() or self.rect.y < 0):
-            self.remove()
+            self.kill()
         

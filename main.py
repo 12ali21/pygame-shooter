@@ -6,7 +6,8 @@ import math
 import os
 from projectile import Projectile
 from player import Player
-from weapon import Gun
+from weapon import MiniGun
+from util import all_sprites_group
 
 pygame.init()
 
@@ -17,11 +18,12 @@ clock = pygame.time.Clock()
 
 dt = 0
 
-all_sprites_group = pygame.sprite.Group()
 projectiles_group = pygame.sprite.Group()
 
 player = Player(all_sprites_group, coordinates=(100,100))
-gun = Gun(all_sprites_group, wielder=player, dist_to_center=player.rect.width/2)
+gun = MiniGun(all_sprites_group, wielder=player, dist_to_center=player.rect.width/2)
+player.assign_weapon(gun)
+
 
 running = True
 while running:
@@ -29,17 +31,15 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Left mouse button press
-            if event.button == 1:
-                vector = pygame.Vector2(event.pos) - player.rect.center
-                p_rect = pygame.rect.Rect(0,0,10,10)
-                p_rect.center = player.rect.center
-                Projectile(all_sprites_group, projectiles_group, rect=p_rect , direction=-math.radians(vector.angle_to((0,0))), speed=1000)
-                
-    vector = pygame.Vector2(pygame.mouse.get_pos()) - player.rect.center
+        # elif event.type == pygame.MOUSEBUTTONDOWN:
+        #     # Left mouse button press
+        #     if event.button == 1:
+        #         vector = pygame.Vector2(event.pos) - player.rect.center
+        #         p_rect = pygame.rect.Rect(0,0,10,10)
+        #         p_rect.center = player.rect.center
+        #         Projectile(all_sprites_group, projectiles_group, rect=p_rect , direction=-math.radians(vector.angle_to((0,0))), speed=1000)
     
-    gun.face_direction(vector.angle_to((0,0)))
+    gun.set_target(pygame.mouse.get_pos())
 
     # update
     all_sprites_group.update(dt)    

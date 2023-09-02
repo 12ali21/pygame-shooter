@@ -5,23 +5,29 @@ import pygame
 import math
 import os
 from projectile import Projectile
-from player import Player
+from character import *
 from weapon import MiniGun
-from util import all_sprites_group
+from groups import *
+import util
 
 pygame.init()
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
-screen = pygame.display.set_mode((800,600))
+screen = pygame.display.set_mode((1000,800))
 clock = pygame.time.Clock()
 
 dt = 0
 
 projectiles_group = pygame.sprite.Group()
 
-player = Player(all_sprites_group, coordinates=(100,100))
-gun = MiniGun(all_sprites_group, wielder=player, dist_to_center=player.rect.width/2)
+player = Player()
+gun = MiniGun(wielder=player, dist_to_center=player.rect.width/2)
+enemy = Amoebite(all_sprites_group, coordinates=(100,100), target=player)
+enemy = Amoebite(all_sprites_group, coordinates=(60,100), target=player)
+enemy = Amoebite(all_sprites_group, coordinates=(100,60), target=player)
+
+all_sprites_group.add(gun, player)
 player.assign_weapon(gun)
 
 
@@ -45,7 +51,7 @@ while running:
     all_sprites_group.update(dt)    
 
     # Draw background (DON'T DRAW ANYTHING BEFORE THIS)
-    screen.fill('yellow')
+    screen.fill('black')
     all_sprites_group.draw(screen)
     pygame.display.flip()
 

@@ -4,7 +4,6 @@ import os
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, "data")
 
-all_sprites_group = pygame.sprite.Group()
 
 
 # functions to create our resources
@@ -37,3 +36,5 @@ def load_sound(name):
 
     return sound
 
+def get_vector(point1, point2):
+    return pygame.Vector2(point2) - pygame.Vector2(point1)

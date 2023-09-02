@@ -6,7 +6,7 @@ import util
 from pygame.sprite import Group
 
 class Projectile(pygame.sprite.Sprite):
-    def __init__(self, *groups: Group, rect: pygame.Rect , image, direction, speed) -> None:
+    def __init__(self, *groups: Group, rect: pygame.Rect , image, direction, speed, damage) -> None:
         super().__init__(*groups)
 
         self.image = image
@@ -14,6 +14,8 @@ class Projectile(pygame.sprite.Sprite):
 
         self.speed = speed
         self.direction = direction
+
+        self.damage = damage
     
     def update(self, dt):
         angle = math.radians(self.direction)
@@ -36,6 +38,6 @@ class MinigunBullet(Projectile):
         self.rect = self.image.get_rect()
         self.rect.center = starting_pos
 
-        super().__init__(*groups, rect=self.rect, image=self.image, direction=direction, speed=5000)
+        super().__init__(*groups, rect=self.rect, image=self.image, direction=direction, speed=5000, damage=8)
 
 

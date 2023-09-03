@@ -4,22 +4,24 @@ import util
 from groups import *
 from weapon import MiniGun
 import math
+from healthbar import DefaultHealthBar
 from animation import Animator
 
 class Character(pygame.sprite.Sprite):
-    def __init__(self, *groups: Group, image, rect, hp) -> None:
+    def __init__(self, *groups: Group, image, rect: pygame.Rect, hp) -> None:
         super().__init__(*groups)
         self.original_image = image
         self.original_rect = rect
         self.image = self.original_image
         self.rect = self.original_rect
-        self.hitpoints = hp
+        self.full_hp = hp
+        self.hp = hp
 
         self.animator = Animator(self.original_image)
     
     def damage(self, amount):
-        self.hitpoints -= amount
-        if(self.hitpoints <= 0):
+        self.hp -= amount
+        if(self.hp <= 0):
             self.kill()
 
 
@@ -72,6 +74,7 @@ class Amoebite(Character):
 
     is_walking = False
 
+    full_hp = 250
     bite_damage = 20
     bite_range = 100
     bite_range_offset = 20
@@ -81,15 +84,17 @@ class Amoebite(Character):
         image, rect = util.load_image('amoebite/amoebite.png', scale=0.1)
         rect.center = coordinates
         self.target = target
-        super().__init__(*groups, image=image, rect=rect, hp=250)
+        super().__init__(*groups, image=image, rect=rect, hp=self.full_hp)
+        
 
         self.animator.add_animation(self.WALK_ANIMATION, util.get_data_dir('amoebite/walk'), scale=0.1)
         self.bite_timer = util.CallbackTimer(1, self.bite_target, call_first=True)
+        
+        self.healthbar = DefaultHealthBar(all_sprites_group, height=8, length=60, owner=self)
 
         
     def update(self, dt):
         self.default_image = self.animator.update(dt)
-
         # Rotating towards target
         target_vector = util.get_vector(self.rect.center, self.target.rect.center)
         direction = target_vector.angle_to((0,0))
@@ -118,6 +123,6 @@ class Amoebite(Character):
     def bite_target(self):
         if util.get_vector(self.rect.center, self.target.rect.center).length() <= self.bite_range:
             self.target.damage(self.bite_damage)
-            print("Bite {} hp: {}".format(self.target, self.target.hitpoints))
+            print("Bite {} hp: {}".format(self.target, self.target.hp))
         else:
             self.bite_timer.reset()

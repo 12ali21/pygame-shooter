@@ -43,7 +43,7 @@ while running:
     all_sprites_group.update(dt)    
 
     # Draw background (DON'T DRAW ANYTHING BEFORE THIS)
-    screen.fill('black')
+    screen.fill('pink')
     all_sprites_group.draw(screen)
     pygame.display.flip()
 

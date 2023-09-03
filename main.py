@@ -24,8 +24,7 @@ projectiles_group = pygame.sprite.Group()
 player = Player()
 gun = MiniGun(wielder=player, dist_to_center=player.rect.width/2)
 enemy = Amoebite(all_sprites_group, coordinates=(100,100), target=player)
-enemy = Amoebite(all_sprites_group, coordinates=(60,100), target=player)
-enemy = Amoebite(all_sprites_group, coordinates=(100,60), target=player)
+
 
 all_sprites_group.add(gun, player)
 player.assign_weapon(gun)
@@ -37,13 +36,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        # elif event.type == pygame.MOUSEBUTTONDOWN:
-        #     # Left mouse button press
-        #     if event.button == 1:
-        #         vector = pygame.Vector2(event.pos) - player.rect.center
-        #         p_rect = pygame.rect.Rect(0,0,10,10)
-        #         p_rect.center = player.rect.center
-        #         Projectile(all_sprites_group, projectiles_group, rect=p_rect , direction=-math.radians(vector.angle_to((0,0))), speed=1000)
     
     gun.set_target(pygame.mouse.get_pos())
 

@@ -4,6 +4,7 @@ import util
 from groups import *
 from weapon import MiniGun
 import math
+from animation import Animator
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, *groups: Group, image, rect, hp) -> None:
@@ -12,8 +13,9 @@ class Character(pygame.sprite.Sprite):
         self.original_rect = rect
         self.image = self.original_image
         self.rect = self.original_rect
-
         self.hitpoints = hp
+
+        self.animator = Animator(self.original_image)
     
     def damage(self, amount):
         self.hitpoints -= amount
@@ -66,25 +68,38 @@ class Player(Character):
 
 class Amoebite(Character):
     movement_speed = 250
-    def __init__(self, *groups: Group, coordinates, target) -> None:
+    WALK_ANIMATION = 'walk'
 
+    is_walking = False
+
+
+    def __init__(self, *groups: Group, coordinates, target) -> None:
         image, rect = util.load_image('enemy1.png', scale=0.1)
         rect.center = coordinates
-
         self.target = target
         super().__init__(*groups, image=image, rect=rect, hp=250)
+
+        self.animator.add_animation(self.WALK_ANIMATION, util.get_data_dir('amoebite/walk'), scale=0.1)
         
     def update(self, dt):
+        self.default_image = self.animator.update(dt)
+
         target_vector = util.get_vector(self.rect.center, self.target.rect.center)
         direction = target_vector.angle_to((0,0))
-        self.image = pygame.transform.rotate(self.original_image, direction - 90)
+        self.image = pygame.transform.rotate(self.default_image, direction - 90)
         self.rect = self.image.get_rect(center=self.rect.center)
 
         if(target_vector.length() > 100):
+            if(not self.is_walking):
+                self.is_walking = True
+                self.animator.animate(self.WALK_ANIMATION, animation_speed=10)
+
             angle_radians = math.radians(direction)
-            print(self.rect, end='  ')
             self.rect = self.rect.move(math.cos(angle_radians)*dt*self.movement_speed, -math.sin(angle_radians)*dt*self.movement_speed)
-            print(self.rect)
+
+        else:
+            self.is_walking = False
+            self.animator.stop_animaton()
         
         collided_bullets = self.rect.collideobjectsall(player_projectile_group.sprites())
         for b in collided_bullets:

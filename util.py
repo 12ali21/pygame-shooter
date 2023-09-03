@@ -22,6 +22,9 @@ def load_image(name, colorkey=None, scale=1):
         image.set_colorkey(colorkey, pygame.RLEACCEL)
     return image, image.get_rect()
 
+# returns joined path of default data directory and provided directory
+def get_data_dir(dir):
+    return os.path.join(data_dir, dir)
 
 def load_sound(name):
     class NoneSound:

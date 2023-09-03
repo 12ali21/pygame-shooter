@@ -41,3 +41,27 @@ def load_sound(name):
 
 def get_vector(point1, point2):
     return pygame.Vector2(point2) - pygame.Vector2(point1)
+
+class CallbackTimer():
+    started = False
+    dt_container = 0
+
+    def __init__(self, cooldown, callback, call_first=False) -> None:
+        self.cooldown = cooldown
+        self.callback = callback
+        self.call_first = call_first
+
+    def update(self, dt):
+        if not self.started:
+            self.started = True
+            if self.call_first:
+                self.callback()
+        
+        self.dt_container += dt
+        if(self.dt_container >= self.cooldown):
+            self.dt_container = 0
+            self.callback()
+
+    def reset(self):
+        self.started = False
+        self.dt_container = 0

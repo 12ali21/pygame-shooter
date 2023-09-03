@@ -32,7 +32,7 @@ class Projectile(pygame.sprite.Sprite):
 class MinigunBullet(Projectile):
     def __init__(self, *groups: Group, starting_pos, direction) -> None:
         random_scale = random.randint(1,10)/10
-        self.image, self.rect = util.load_image('minigun_bullet.png', scale=random_scale)
+        self.image, self.rect = util.load_image('minigun/minigun_bullet.png', scale=random_scale)
 
         self.image = pygame.transform.rotate(self.image, direction-90)
         self.rect = self.image.get_rect()

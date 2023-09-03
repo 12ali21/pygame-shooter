@@ -15,12 +15,12 @@ class MiniGun(pygame.sprite.Sprite):
         self.time_between_shots = 0
         self.shooting_started = False
 
-        self.shooting_sound = util.load_sound('minigun_shooting.mp3')
+        self.shooting_sound = util.load_sound('minigun/minigun_shooting.mp3')
+        self.shooting_sound.set_volume(0.1)
         
         super().__init__(*groups)
         self.wielder = wielder
-        print(dist_to_center)
-        self.original_image, self.original_rect = util.load_image("minigun.png", scale=0.35)
+        self.original_image, self.original_rect = util.load_image("minigun/minigun.png", scale=0.25)
 
         self.image = self.original_image
         self.rect = self.original_rect
@@ -45,7 +45,7 @@ class MiniGun(pygame.sprite.Sprite):
         
         # now fixing the gun position
         # first create offset vectors in the original position (Gun and character facing up)
-        offset_vector = pygame.Vector2(-10, -25)
+        offset_vector = pygame.Vector2(-24, -30)
         pivot_vector = pygame.Vector2(self.wielder.original_rect.width/2, 0)
         sum_vector = offset_vector + pivot_vector
 

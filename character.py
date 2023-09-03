@@ -29,7 +29,7 @@ class Player(Character):
     movement_speed = 200
 
     def __init__(self, *groups: Group) -> None:
-        image, rect = util.load_image("player.png", scale=0.55)
+        image, rect = util.load_image("player.png", scale=0.60)
         window_size = pygame.display.get_window_size()
         rect.center = (window_size[0] / 2, window_size[1] / 2)
         super().__init__(*groups, image=image, rect=rect, hp=1000)
@@ -72,24 +72,32 @@ class Amoebite(Character):
 
     is_walking = False
 
+    bite_damage = 20
+    bite_range = 100
+    bite_range_offset = 20
 
-    def __init__(self, *groups: Group, coordinates, target) -> None:
-        image, rect = util.load_image('enemy1.png', scale=0.1)
+
+    def __init__(self, *groups: Group, coordinates, target:Character) -> None:
+        image, rect = util.load_image('amoebite/amoebite.png', scale=0.1)
         rect.center = coordinates
         self.target = target
         super().__init__(*groups, image=image, rect=rect, hp=250)
 
         self.animator.add_animation(self.WALK_ANIMATION, util.get_data_dir('amoebite/walk'), scale=0.1)
+        self.bite_timer = util.CallbackTimer(1, self.bite_target, call_first=True)
+
         
     def update(self, dt):
         self.default_image = self.animator.update(dt)
 
+        # Rotating towards target
         target_vector = util.get_vector(self.rect.center, self.target.rect.center)
         direction = target_vector.angle_to((0,0))
         self.image = pygame.transform.rotate(self.default_image, direction - 90)
         self.rect = self.image.get_rect(center=self.rect.center)
 
-        if(target_vector.length() > 100):
+        # Moving towards target
+        if(target_vector.length() > self.bite_range - self.bite_range_offset):
             if(not self.is_walking):
                 self.is_walking = True
                 self.animator.animate(self.WALK_ANIMATION, animation_speed=10)
@@ -100,8 +108,16 @@ class Amoebite(Character):
         else:
             self.is_walking = False
             self.animator.stop_animaton()
+            self.bite_timer.update(dt)
         
         collided_bullets = self.rect.collideobjectsall(player_projectile_group.sprites())
         for b in collided_bullets:
             self.damage(b.damage)
             b.kill()
+
+    def bite_target(self):
+        if util.get_vector(self.rect.center, self.target.rect.center).length() <= self.bite_range:
+            self.target.damage(self.bite_damage)
+            print("Bite {} hp: {}".format(self.target, self.target.hitpoints))
+        else:
+            self.bite_timer.reset()

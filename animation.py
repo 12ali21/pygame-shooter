@@ -40,7 +40,6 @@ class Animator:
         # Acts as a timer between frames
         self.dt_container += dt
         if(self.dt_container>=1/self.animation_speed):
-            print(self.current_index)
             self.dt_container = 0
             # Sets current frame and loop back to start of the animation if needed
             frames = self.animations[self.active]

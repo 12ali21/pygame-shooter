@@ -90,8 +90,8 @@ class Amoebite(Character):
         self.animator.add_animation(self.WALK_ANIMATION, util.get_data_dir('amoebite/walk'), scale=0.1)
         self.bite_timer = util.CallbackTimer(1, self.bite_target, call_first=True)
         
-        self.healthbar = DefaultHealthBar(all_sprites_group, height=8, length=60, owner=self)
-
+        self.healthbar = DefaultHealthBar(all_sprites_group, height=5, length=40, owner=self)
+    
         
     def update(self, dt):
         self.default_image = self.animator.update(dt)
